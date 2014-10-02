@@ -1,7 +1,9 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
-import app.ngenhttplib.store.ValuesStore;
 import java.net.Proxy;
+
+import app.ngenhttplib.http.HttpInvoker;
+import app.ngenhttplib.store.ValuesStore;
 
 public class AnonymityDetector {
 

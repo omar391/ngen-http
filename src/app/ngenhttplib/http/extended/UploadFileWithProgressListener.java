@@ -1,12 +1,15 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.extended;
 
-import app.ngenhttplib.http.impl.IHttpConnectionManager;
-import app.ngenhttplib.http.impl.IHttpProgressListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+
 import org.apache.http.entity.mime.content.FileBody;
+
+import app.ngenhttplib.http.HttpInvoker;
+import app.ngenhttplib.http.impl.IHttpConnectionManager;
+import app.ngenhttplib.http.impl.IHttpProgressListener;
 
 public class UploadFileWithProgressListener implements IHttpConnectionManager {
 

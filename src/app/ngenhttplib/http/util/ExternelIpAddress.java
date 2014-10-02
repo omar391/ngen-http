@@ -1,8 +1,10 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
-import app.ngenhttplib.store.ValuesStore;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import app.ngenhttplib.http.HttpInvoker;
+import app.ngenhttplib.store.ValuesStore;
 
 public class ExternelIpAddress {
 

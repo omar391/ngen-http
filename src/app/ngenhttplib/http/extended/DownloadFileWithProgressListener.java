@@ -1,10 +1,13 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.extended;
 
-import app.ngenhttplib.http.impl.IHttpConnectionManager;
-import app.ngenhttplib.http.impl.IHttpProgressListener;
 import java.io.InputStream;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+
+import app.ngenhttplib.http.HttpInvoker;
+import app.ngenhttplib.http.impl.IHttpConnectionManager;
+import app.ngenhttplib.http.impl.IHttpProgressListener;
 
 public class DownloadFileWithProgressListener implements IHttpConnectionManager {
 

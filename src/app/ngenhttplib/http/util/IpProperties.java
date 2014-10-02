@@ -1,7 +1,12 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
-import app.ngenhttplib.http.impl.IHttpProgressListener;
 import java.net.Proxy;
+
+import app.ngenhttplib.http.HttpInvoker;
+import app.ngenhttplib.http.extended.DownloadFileWithProgressListener;
+import app.ngenhttplib.http.extended.SpeedManager;
+import app.ngenhttplib.http.extended.UploadFileWithProgressListener;
+import app.ngenhttplib.http.impl.IHttpProgressListener;
 
 public class IpProperties implements IHttpProgressListener {
 

@@ -1,4 +1,4 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;

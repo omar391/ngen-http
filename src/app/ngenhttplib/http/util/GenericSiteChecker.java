@@ -1,7 +1,9 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import app.ngenhttplib.http.HttpInvoker;
 
 public class GenericSiteChecker {
 

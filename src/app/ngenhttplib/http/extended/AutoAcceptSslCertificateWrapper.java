@@ -1,4 +1,4 @@
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.extended;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;

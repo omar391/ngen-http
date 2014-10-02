@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;

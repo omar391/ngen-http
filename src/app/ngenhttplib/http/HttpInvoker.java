@@ -11,9 +11,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.Map;
-import org.apache.http.Header;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
@@ -35,6 +34,8 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+
+import app.ngenhttplib.http.extended.AutoAcceptSslCertificateWrapper;
 
 public final class HttpInvoker {
 
@@ -173,8 +174,8 @@ public final class HttpInvoker {
         fop.close();
     }
 
-    public Map<String, String> getHeaders() throws Exception {
-        Map<String, String> hList = new HashMap();
+    public HashMap<String, String> getHeaders() throws Exception {
+        HashMap<String, String> hList = new HashMap<String, String>();
         Header[] header = getHttpResponse().getAllHeaders();
         for (Header h : header) {
             hList.put(h.getName(), h.getValue());

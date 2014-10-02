@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package app.ngenhttplib.http;
+package app.ngenhttplib.http.util;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
