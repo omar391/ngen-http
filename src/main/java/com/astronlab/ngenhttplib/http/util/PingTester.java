@@ -1,4 +1,4 @@
-package app.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.util;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;

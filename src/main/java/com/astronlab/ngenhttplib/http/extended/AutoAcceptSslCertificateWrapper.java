@@ -1,4 +1,4 @@
-package app.ngenhttplib.http.extended;
+package com.astronlab.ngenhttplib.http.extended;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;

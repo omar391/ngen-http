@@ -1,15 +1,14 @@
-package app.ngenhttplib.http.extended;
+package com.astronlab.ngenhttplib.http.extended;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
+import com.astronlab.ngenhttplib.http.HttpInvoker;
+import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
+import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 import org.apache.http.entity.mime.content.FileBody;
-
-import app.ngenhttplib.http.HttpInvoker;
-import app.ngenhttplib.http.impl.IHttpConnectionManager;
-import app.ngenhttplib.http.impl.IHttpProgressListener;
 
 public class UploadFileWithProgressListener implements IHttpConnectionManager {
 
@@ -35,7 +34,7 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
     public void startUploadSpeedTest() {
         try {
             updateListener.HttpUpdateListener(IHttpProgressListener.Status.RUNNING, IHttpProgressListener.UpdateType.STATUS, IHttpProgressListener.CONNECTING_MSG);
-            MultipartEntity mEntity = new MultipartEntity();
+            CustomMultipartEntity mEntity = new CustomMultipartEntity();
             mEntity.addPart("uploadfile", new FileBody(getUploadFile()));
             httpInvoker.setPostParams(mEntity);
             httpInvoker.getHttpResponse();
@@ -141,11 +140,11 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
         }
     }
 
-    private class MultipartEntity extends org.apache.http.entity.mime.MultipartEntity {
+    private class CustomMultipartEntity extends org.apache.http.entity.mime.MultipartEntity {
 
         private OutputStreamProgress outstream;
 
-        public MultipartEntity() {
+        public CustomMultipartEntity() {
             super();
         }
 

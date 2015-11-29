@@ -1,4 +1,4 @@
-package app.ngenhttplib.store;
+package com.astronlab.ngenhttplib.store;
 
 public class ValuesStore {
 

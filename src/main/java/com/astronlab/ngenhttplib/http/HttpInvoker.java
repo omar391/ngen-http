@@ -1,4 +1,4 @@
-package app.ngenhttplib.http;
+package com.astronlab.ngenhttplib.http;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,7 +35,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
-import app.ngenhttplib.http.extended.AutoAcceptSslCertificateWrapper;
+import com.astronlab.ngenhttplib.http.extended.AutoAcceptSslCertificateWrapper;
 
 public final class HttpInvoker {
 

@@ -1,13 +1,13 @@
-package app.ngenhttplib.http.extended;
+package com.astronlab.ngenhttplib.http.extended;
 
 import java.io.InputStream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 
-import app.ngenhttplib.http.HttpInvoker;
-import app.ngenhttplib.http.impl.IHttpConnectionManager;
-import app.ngenhttplib.http.impl.IHttpProgressListener;
+import com.astronlab.ngenhttplib.http.HttpInvoker;
+import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
+import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 
 public class DownloadFileWithProgressListener implements IHttpConnectionManager {
 

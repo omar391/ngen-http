@@ -1,12 +1,12 @@
-package app.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.util;
 
 import java.net.Proxy;
 
-import app.ngenhttplib.http.HttpInvoker;
-import app.ngenhttplib.http.extended.DownloadFileWithProgressListener;
-import app.ngenhttplib.http.extended.SpeedManager;
-import app.ngenhttplib.http.extended.UploadFileWithProgressListener;
-import app.ngenhttplib.http.impl.IHttpProgressListener;
+import com.astronlab.ngenhttplib.http.HttpInvoker;
+import com.astronlab.ngenhttplib.http.extended.DownloadFileWithProgressListener;
+import com.astronlab.ngenhttplib.http.extended.SpeedManager;
+import com.astronlab.ngenhttplib.http.extended.UploadFileWithProgressListener;
+import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 
 public class IpProperties implements IHttpProgressListener {
 

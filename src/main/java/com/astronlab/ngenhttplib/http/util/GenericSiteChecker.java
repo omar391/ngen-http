@@ -1,9 +1,9 @@
-package app.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import app.ngenhttplib.http.HttpInvoker;
+import com.astronlab.ngenhttplib.http.HttpInvoker;
 
 public class GenericSiteChecker {
 

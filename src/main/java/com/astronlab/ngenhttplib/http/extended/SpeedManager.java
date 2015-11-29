@@ -1,6 +1,6 @@
-package app.ngenhttplib.http.extended;
+package com.astronlab.ngenhttplib.http.extended;
 
-import app.ngenhttplib.http.impl.IHttpConnectionManager;
+import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
 
 public class SpeedManager {
 
