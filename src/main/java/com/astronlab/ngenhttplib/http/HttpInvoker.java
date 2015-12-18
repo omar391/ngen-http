@@ -1,16 +1,9 @@
 package com.astronlab.ngenhttplib.http;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.HashMap;
+import com.astronlab.ngenhttplib.http.extended.AutoAcceptSslCertificateWrapper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -20,7 +13,6 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.Scheme;
@@ -35,27 +27,41 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
-import com.astronlab.ngenhttplib.http.extended.AutoAcceptSslCertificateWrapper;
+import java.io.*;
+import java.net.*;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public final class HttpInvoker {
 
     private String httpUrl;
-    private DefaultHttpClient httpClient;
-    private HttpUriRequest httpRequest;
-
-    public HttpInvoker(String url) throws Exception {
-        httpClient = new DefaultHttpClient();
-        this.httpUrl = url;
-        httpRequest = new HttpGet(getUrl());
-    }
+    private OkHttpClient httpClient;
+    private Request httpRequest;
 
     public HttpInvoker() {
-        httpClient = new DefaultHttpClient();
+        httpClient = new OkHttpClient();
+    }
+
+    public HttpInvoker(String url) throws Exception {
+        this();
+        setUrl(url);
+    }
+
+    public void setUrl(String httpUrl) {
+        this.httpUrl = httpUrl;
+        httpRequest = new Request.Builder()
+                .url(httpUrl)
+                .build();
+    }
+
+    public Response getHttpResponse() throws IOException {
+        System.out.println("Invoking: " + httpUrl);
+        return httpClient.newCall(httpRequest).execute();
     }
 
     public void forceAcceptSslCertificate() {
         AutoAcceptSslCertificateWrapper cert = new AutoAcceptSslCertificateWrapper();
-        httpClient = (DefaultHttpClient) cert.wrapClient(httpClient);
+        httpClient = (OkHttpClient) cert.wrapClient(httpClient);
     }
 
     public String getUrl() throws Exception {
@@ -66,63 +72,28 @@ public final class HttpInvoker {
     }
 
     public void removeProxy() {
-        httpClient = new DefaultHttpClient();
+        httpClient.setProxy(Proxy.NO_PROXY);
     }
 
     public void setProxy(String proxyIp, int proxyPort, Proxy.Type proxyType) {
-        if (proxyType.equals(Proxy.Type.HTTP)) {
-            removeProxy();
-            HttpHost proxy = new HttpHost(proxyIp, proxyPort);
-            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                    proxy);
-        } else if (proxyType.equals(Proxy.Type.SOCKS)) {
-            removeProxy();
-            httpClient.getParams().setParameter("socks.host", proxyIp);
-            httpClient.getParams().setParameter("socks.port", proxyPort);
-            httpClient
-                    .getConnectionManager()
-                    .getSchemeRegistry()
-                    .register(
-                            new Scheme("http", 80, new MySchemeSocketFactory()));
-        }
+        removeProxy();
+        InetSocketAddress socketAddress = new InetSocketAddress(proxyIp, proxyPort);
+        Proxy proxy = new Proxy(proxyType, socketAddress);
+        httpClient.setProxy(proxy);
     }
 
     public void setConnectionTimeOut(int milisec) {
-        httpClient.getParams().setParameter(
-                CoreConnectionPNames.CONNECTION_TIMEOUT, milisec);
+        httpClient.setConnectTimeout(milisec, TimeUnit.MILLISECONDS);
     }
 
     public void setSocketTimeOut(int milisec) {
-        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,
-                milisec);
-    }
-
-    public void setPreemptiveAuthenticationCredentials(String userName,
-            String passWord) {
-        Credentials defaultcreds = new UsernamePasswordCredentials(userName,
-                passWord);
-        httpClient.getCredentialsProvider().setCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-                defaultcreds);
-    }
-
-    public void setBasicAuthenticationCredentials(String userName,
-            String passWord) {
-        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(
-                userName, passWord);
-        httpRequest.addHeader(BasicScheme
-                .authenticate(creds, "US-ASCII", false));
+        httpClient.setReadTimeout(milisec, TimeUnit.SECONDS);
     }
 
     public void setPostParams(MultipartEntity mEntity) throws Exception {
         HttpPost httpPost = new HttpPost(getUrl());
         httpPost.setEntity(mEntity);
         httpRequest = httpPost;
-    }
-
-    public void setUrl(String httpUrl) {
-        this.httpUrl = httpUrl;
-        httpRequest = new HttpGet(httpUrl);
     }
 
     public void addPresetHeaderSet() {
@@ -147,11 +118,6 @@ public final class HttpInvoker {
 
     public void enableRedirection() {
         httpClient.setRedirectStrategy(new LaxRedirectStrategy());
-    }
-
-    public HttpResponse getHttpResponse() throws IOException, Exception {
-        System.out.println("Invoking: " + httpUrl);
-        return new DecompressingHttpClient(httpClient).execute(httpRequest);
     }
 
     public String getStringData() throws IOException, Exception {
@@ -221,8 +187,8 @@ public final class HttpInvoker {
 
         @Override
         public Socket connectSocket(final Socket socket,
-                final InetSocketAddress remoteAddress,
-                final InetSocketAddress localAddress, final HttpParams params)
+                                    final InetSocketAddress remoteAddress,
+                                    final InetSocketAddress localAddress, final HttpParams params)
                 throws IOException, UnknownHostException,
                 ConnectTimeoutException {
             if (remoteAddress == null) {
