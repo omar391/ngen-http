@@ -1,9 +1,9 @@
 package com.astronlab.ngenhttplib.http.util;
 
-import java.net.Proxy;
-
 import com.astronlab.ngenhttplib.http.HttpInvoker;
 import com.astronlab.ngenhttplib.store.ValuesStore;
+
+import java.net.Proxy;
 
 public class AnonymityDetector {
 

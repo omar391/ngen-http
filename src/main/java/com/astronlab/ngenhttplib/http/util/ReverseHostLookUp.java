@@ -4,14 +4,13 @@
  */
 package com.astronlab.ngenhttplib.http.util;
 
-import java.util.Enumeration;
-import java.util.Hashtable;
-
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  *

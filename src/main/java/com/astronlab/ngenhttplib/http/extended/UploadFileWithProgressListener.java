@@ -1,14 +1,14 @@
 package com.astronlab.ngenhttplib.http.extended;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-
 import com.astronlab.ngenhttplib.http.HttpInvoker;
 import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
 import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 import org.apache.http.entity.mime.content.FileBody;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 public class UploadFileWithProgressListener implements IHttpConnectionManager {
 
@@ -37,6 +37,7 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
             CustomMultipartEntity mEntity = new CustomMultipartEntity();
             mEntity.addPart("uploadfile", new FileBody(getUploadFile()));
             httpInvoker.setPostParams(mEntity);
+            httpInvoker.setMultipartPostParams();
             httpInvoker.getHttpResponse();
             updateListener.HttpUpdateListener(IHttpProgressListener.Status.SUCCESS, IHttpProgressListener.UpdateType.STATUS, IHttpProgressListener.SUCCESSFUL_MSG);
             httpInvoker.close();

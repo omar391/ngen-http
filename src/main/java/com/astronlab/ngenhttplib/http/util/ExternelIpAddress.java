@@ -1,10 +1,10 @@
 package com.astronlab.ngenhttplib.http.util;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.astronlab.ngenhttplib.http.HttpInvoker;
 import com.astronlab.ngenhttplib.store.ValuesStore;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExternelIpAddress {
 
