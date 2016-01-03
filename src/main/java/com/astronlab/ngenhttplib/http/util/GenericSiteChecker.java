@@ -7,24 +7,24 @@ import java.util.logging.Logger;
 
 public class GenericSiteChecker {
 
-    private boolean isHttps = false;
-    protected HttpInvoker invoker;
     private final String failureRemark = "Failed";
+    protected HttpInvoker invoker;
     protected String resultHtml = "";
     protected String successRemark = "Working";
+    private boolean isHttps = false;
     private String url;
 
     public GenericSiteChecker() {
         invoker = new HttpInvoker();
     }
 
+    public HttpInvoker getInvoker() {
+        return this.invoker;
+    }
+
     public GenericSiteChecker setInvoker(HttpInvoker invoker) {
         this.invoker = invoker;
         return this;
-    }
-
-    public HttpInvoker getInvoker() {
-        return this.invoker;
     }
 
     public GenericSiteChecker setUrl(String url) {
@@ -80,7 +80,7 @@ public class GenericSiteChecker {
         prepareInvoker();
         fixSsl();
         resultHtml = invoker.getStringData();
-        invoker.releaseConnection();
+        invoker.closeNReleaseResource();
         return true;
     }
 }

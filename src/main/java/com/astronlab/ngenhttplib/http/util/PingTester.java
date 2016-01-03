@@ -4,7 +4,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
- *
  * @author omar
  */
 public class PingTester {

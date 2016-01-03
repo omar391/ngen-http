@@ -2,6 +2,8 @@ package com.astronlab.ngenhttplib.http.extended;
 
 import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
 
+import java.io.IOException;
+
 public class SpeedManager {
 
     private double speed = 0;
@@ -13,14 +15,14 @@ public class SpeedManager {
         httpController = connectionController;
     }
 
-    public void manageSpeed(double speed) {
+    public void manageSpeed(double speed) throws IOException {
         if ((int) speed > (int) this.speed) {
             counter = 0;
         } else {
             if (counter < countLimit) {
                 counter++;
             } else {
-                httpController.StopConnection();
+                httpController.stopConnection();
             }
         }
         this.speed = speed;

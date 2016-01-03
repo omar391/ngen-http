@@ -13,7 +13,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 
 /**
- *
  * @author omar
  */
 public class ReverseHostLookUp {
@@ -34,17 +33,17 @@ public class ReverseHostLookUp {
 
             Attributes attrs = ctx.getAttributes(getArpaName(), new String[]{"PTR"});
             String divider = "";
-            if(attrs.size() > 1){
+            if (attrs.size() > 1) {
                 divider = "|";
             }
 
-            for (NamingEnumeration ae = attrs.getAll(); ae.hasMoreElements();) {
+            for (NamingEnumeration ae = attrs.getAll(); ae.hasMoreElements(); ) {
 
                 Attribute attr = (Attribute) ae.next();
 
                 String attrId = attr.getID();
 
-                for (Enumeration vals = attr.getAll(); vals.hasMoreElements(); ){
+                for (Enumeration vals = attr.getAll(); vals.hasMoreElements(); ) {
                     hostName += divider + vals.nextElement();
                 }
 
@@ -57,12 +56,12 @@ public class ReverseHostLookUp {
         }
         return hostName;
     }
-    
-    private String getArpaName(){
+
+    private String getArpaName() {
         String arpaName = "in-addr.arpa";
         String[] parts = Ip.split("\\.");
         int len = parts.length;
-        for(int i = 0; i < len ; i++){
+        for (int i = 0; i < len; i++) {
             arpaName = parts[i] + "." + arpaName;
         }
         return arpaName;

@@ -30,11 +30,10 @@ public class ExternelIpAddress {
             invoker.setUrl(ValuesStore.Http.extIpUrl);
             ip = matchIp(invoker.getStringData());
             if (ip == null) {
-                invoker.close();
                 throw new Exception("External IP parsing returns null");
             }
         }
-        invoker.close();
+        invoker.closeNReleaseResource();
         return ip;
     }
 

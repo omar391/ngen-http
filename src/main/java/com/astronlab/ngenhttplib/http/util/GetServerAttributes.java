@@ -8,17 +8,16 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 /**
- *
  * @author omar
  */
-public class GetServerAttributes implements Callable<HashMap>{
+public class GetServerAttributes implements Callable<HashMap> {
 
+    public static String KEY_LATENCY = "latency";
+    public static String KEY_HOSTNAME = "host";
     private String ip;
     private int port;
     private int timeOut = 3000;
     private HashMap result;
-    public static String KEY_LATENCY = "latency";
-    public static String KEY_HOSTNAME = "host";
 
     public GetServerAttributes(String ip, String port) {
         this.ip = ip;
@@ -36,6 +35,6 @@ public class GetServerAttributes implements Callable<HashMap>{
 
     @Override
     public HashMap call() throws Exception {
-        return getResult();    
+        return getResult();
     }
 }

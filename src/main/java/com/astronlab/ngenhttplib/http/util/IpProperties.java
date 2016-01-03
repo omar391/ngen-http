@@ -6,6 +6,7 @@ import com.astronlab.ngenhttplib.http.extended.SpeedManager;
 import com.astronlab.ngenhttplib.http.extended.UploadFileWithProgressListener;
 import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 
+import java.io.IOException;
 import java.net.Proxy;
 
 public class IpProperties implements IHttpProgressListener {
@@ -57,14 +58,20 @@ public class IpProperties implements IHttpProgressListener {
     }
 
     @Override
-    public void HttpUpdateListener(Object stateType, Object updateType, Object value) {
+    public void notifyListener(Object stateType, Object updateType, Object value) {
         if (stateType == Status.FAILS) {
             //ConsoleService.info("Http connection fails for host: " + ip + " : " + port);
         } else if (stateType == Status.RUNNING) {
             if (updateType == UpdateType.DOWNLOAD) {
-                downloadSpeedManager.manageSpeed((double) value);
+                try {
+                    downloadSpeedManager.manageSpeed((double) value);
+                } catch (IOException e) {
+                }
             } else if (updateType == UpdateType.UPLOAD) {
-                uploadSpeedManager.manageSpeed((double) value);
+                try {
+                    uploadSpeedManager.manageSpeed((double) value);
+                } catch (IOException e) {
+                }
             } else if (updateType == UpdateType.HEADER) {
             } else {
                 //ConsoleService.info(value.toString());+ ui status column
@@ -73,8 +80,4 @@ public class IpProperties implements IHttpProgressListener {
             //ConsoleService.info("Http task completed succesfully!");
         }
     }
-
-//    public HashMap<String, String> siteTest(Set keySet) {
-//        return new SiteTestTool().siteTest(keySet);
-//    }
 }

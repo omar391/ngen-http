@@ -7,16 +7,16 @@ import java.net.Proxy;
 
 public class AnonymityDetector {
 
-    /* n = none/transparent
-     * a = annonymous
-     * h = high annonymous/elite
-     */
-    private String result = "u";
     private final String STATUS_NONE = "None";
     private final String STATUS_ANON = "Annonymous";
     private final String STATUS_ELITE = "Elite";
     private final String STATUS_UNKNOWN = "Unknown";
     private final String STATUS_SOCKS = "Socks";
+    /* n = none/transparent
+     * a = annonymous
+     * h = high annonymous/elite
+     */
+    private String result = "u";
     private Proxy.Type proxyType = Proxy.Type.HTTP;
 
     public AnonymityDetector(String ip, int port) throws Exception {
@@ -25,7 +25,7 @@ public class AnonymityDetector {
         invoker.setSocketTimeOut(30000);
         proxyType = port == 1080 ? Proxy.Type.SOCKS : Proxy.Type.HTTP;
         invoker.setProxy(ip, port, proxyType);
-        invoker.addPresetHeaderSet();
+        invoker.addPresetRequestHeadersSet();
         try {
             result = invoker.getStringData();
         } catch (Exception e) {

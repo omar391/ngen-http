@@ -1,12 +1,15 @@
 package com.astronlab.ngenhttplib.http;
 
-import com.squareup.okhttp.*;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public final class HttpInvoker {
@@ -25,14 +28,11 @@ public final class HttpInvoker {
         setUrl(url);
     }
 
-    public void setUrl(String httpUrl) {
-        this.httpUrl = httpUrl;
-    }
-
     public Response getHttpResponse() throws Exception {
         System.out.println("Invoking: " + httpUrl);
         httpRequestBuilder = new Request.Builder().url(getUrl());
         httpResponse = httpClient.newCall(httpRequestBuilder.build()).execute();
+
         return httpResponse;
     }
 
@@ -40,61 +40,68 @@ public final class HttpInvoker {
         if (httpUrl == null) {
             throw new Exception("Http Url is not initialized.");
         }
+
         return httpUrl;
     }
 
-    public void removeProxy() {
-        httpClient.setProxy(Proxy.NO_PROXY);
+    public HttpInvoker setUrl(String httpUrl) {
+        this.httpUrl = httpUrl;
+
+        return this;
     }
 
-    public void setProxy(String proxyIp, int proxyPort, Proxy.Type proxyType) {
+    public HttpInvoker removeProxy() {
+        httpClient.setProxy(Proxy.NO_PROXY);
+
+        return this;
+    }
+
+    public HttpInvoker setProxy(String proxyIp, int proxyPort, Proxy.Type proxyType) {
         removeProxy();
         InetSocketAddress socketAddress = new InetSocketAddress(proxyIp, proxyPort);
         Proxy proxy = new Proxy(proxyType, socketAddress);
         httpClient.setProxy(proxy);
+
+        return this;
     }
 
-    public void setConnectionTimeOut(int milisec) {
-        httpClient.setConnectTimeout(milisec, TimeUnit.MILLISECONDS);
+    public HttpInvoker setConnectionTimeOut(int milliseconds) {
+        httpClient.setConnectTimeout(milliseconds, TimeUnit.MILLISECONDS);
+
+        return this;
     }
 
-    public void setSocketTimeOut(int milisec) {
-        httpClient.setReadTimeout(milisec, TimeUnit.SECONDS);
+    public HttpInvoker setSocketTimeOut(int milliseconds) {
+        httpClient.setReadTimeout(milliseconds, TimeUnit.SECONDS);
+
+        return this;
     }
 
-    public RequestBody createMultipartRequestBody(List<RequestBody> partsList, MediaType type) {
-        MultipartBuilder multipartBuilder = new MultipartBuilder().type(type);
-        for (RequestBody requestBody : partsList) {
-            multipartBuilder.addPart(requestBody);
-        }
-        return multipartBuilder.build();
+    public HttpInvoker post(MultipartEntityBuilder multipartEntityBuilder) {
+        httpRequestBuilder.post(multipartEntityBuilder.build());
+
+        return this;
     }
 
-    public void post(Map<String, String> valueList) {
-        MultipartBuilder multipartBuilder = new MultipartBuilder();
-        for (Map.Entry<String, String> entry : valueList.entrySet()) {
-            multipartBuilder.addFormDataPart(entry.getKey(), entry.getValue());
-        }
-        post(multipartBuilder.build());
-    }
-
-    public void post(RequestBody requestBody) {
-        httpRequestBuilder.post(requestBody);
-    }
-
-    public void addPresetRequestHeadersSet() {
+    public HttpInvoker addPresetRequestHeadersSet() {
         httpRequestBuilder.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
         httpRequestBuilder.addHeader("Accept-Language", "en-US,en;q=0.8");
         httpRequestBuilder.addHeader("Connection", "keep-alive");
         httpRequestBuilder.addHeader("User-Agent", "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.70 Safari/537.36");
+
+        return this;
     }
 
-    public void addReqestHeader(String key, String value) {
+    public HttpInvoker addRequestHeader(String key, String value) {
         httpRequestBuilder.addHeader(key, value);
+
+        return this;
     }
 
-    public void enableRedirection() {
+    public HttpInvoker enableRedirection() {
         httpClient.setFollowSslRedirects(true);
+
+        return this;
     }
 
     public String getStringData() throws Exception {
@@ -105,7 +112,7 @@ public final class HttpInvoker {
         return getHttpResponse().body().byteStream();
     }
 
-    public void downloadDataToFile(String fileName) throws Exception {
+    public HttpInvoker downloadDataToFile(String fileName) throws Exception {
         File file = new File(fileName);
         FileOutputStream fop = new FileOutputStream(file);
         if (!file.exists()) {
@@ -114,14 +121,28 @@ public final class HttpInvoker {
         fop.write(getHttpResponse().body().bytes());
         fop.flush();
         fop.close();
+
+        return this;
     }
 
-    public void setTag(String connectionName){
+    public HttpInvoker setTag(String connectionName) {
         httpRequestBuilder.tag(connectionName);
+
+        return this;
     }
 
-    public void abortConnection(String connectionName) {
+    public HttpInvoker abortConnection(String connectionName) {
         httpClient.cancel(connectionName);
+
+        return this;
+    }
+
+    public HttpInvoker closeNReleaseResource() throws IOException {
+        if (httpResponse != null) {
+            httpResponse.body().close();
+        }
+
+        return this;
     }
 
 //    class MySchemeSocketFactory implements SocketFactory {
