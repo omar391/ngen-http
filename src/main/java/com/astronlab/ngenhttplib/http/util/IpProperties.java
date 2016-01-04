@@ -34,7 +34,7 @@ public class IpProperties implements IHttpProgressListener {
         httpInvoker = new HttpInvoker();
     }
 
-    public double calculateDownloadSpeed(String dlUrl) {
+    public double calculateDownloadSpeed(String dlUrl) throws Exception {
         httpInvoker.setUrl(dlUrl);
         DownloadFileWithProgressListener downloadTester = new DownloadFileWithProgressListener(httpInvoker, this);
         downloadSpeedManager = new SpeedManager(downloadTester);

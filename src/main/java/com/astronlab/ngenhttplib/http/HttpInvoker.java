@@ -12,7 +12,7 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.concurrent.TimeUnit;
 
-public final class HttpInvoker {
+public class HttpInvoker {
 
     private String httpUrl;
     private OkHttpClient httpClient;
@@ -30,8 +30,7 @@ public final class HttpInvoker {
 
     public Response getHttpResponse() throws Exception {
         System.out.println("Invoking: " + httpUrl);
-        httpRequestBuilder = new Request.Builder().url(getUrl());
-        httpResponse = httpClient.newCall(httpRequestBuilder.build()).execute();
+        httpResponse = httpClient.newCall(getRequestBuilder().build()).execute();
 
         return httpResponse;
     }
@@ -47,7 +46,21 @@ public final class HttpInvoker {
     public HttpInvoker setUrl(String httpUrl) {
         this.httpUrl = httpUrl;
 
+        if (httpRequestBuilder != null) {
+            httpRequestBuilder.url(httpUrl);
+        } else {
+            httpRequestBuilder = new Request.Builder().url(httpUrl);
+        }
+
         return this;
+    }
+
+    private Request.Builder getRequestBuilder() throws Exception {
+        if (httpRequestBuilder == null) {
+            throw new Exception("Please set an URL for your request, first!");
+        }
+
+        return httpRequestBuilder;
     }
 
     public HttpInvoker removeProxy() {
@@ -77,23 +90,23 @@ public final class HttpInvoker {
         return this;
     }
 
-    public HttpInvoker post(MultipartEntityBuilder multipartEntityBuilder) {
-        httpRequestBuilder.post(multipartEntityBuilder.build());
+    public HttpInvoker post(MultipartEntityBuilder multipartEntityBuilder) throws Exception {
+        getRequestBuilder().post(multipartEntityBuilder.build());
 
         return this;
     }
 
-    public HttpInvoker addPresetRequestHeadersSet() {
-        httpRequestBuilder.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-        httpRequestBuilder.addHeader("Accept-Language", "en-US,en;q=0.8");
-        httpRequestBuilder.addHeader("Connection", "keep-alive");
-        httpRequestBuilder.addHeader("User-Agent", "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.70 Safari/537.36");
+    public HttpInvoker addPresetRequestHeadersSet() throws Exception {
+        getRequestBuilder().addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+        getRequestBuilder().addHeader("Accept-Language", "en-US,en;q=0.8");
+        getRequestBuilder().addHeader("Connection", "keep-alive");
+        getRequestBuilder().addHeader("User-Agent", "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.70 Safari/537.36");
 
         return this;
     }
 
-    public HttpInvoker addRequestHeader(String key, String value) {
-        httpRequestBuilder.addHeader(key, value);
+    public HttpInvoker addRequestHeader(String key, String value) throws Exception {
+        getRequestBuilder().addHeader(key, value);
 
         return this;
     }
@@ -125,8 +138,8 @@ public final class HttpInvoker {
         return this;
     }
 
-    public HttpInvoker setTag(String connectionName) {
-        httpRequestBuilder.tag(connectionName);
+    public HttpInvoker setTag(String connectionName) throws Exception {
+        getRequestBuilder().tag(connectionName);
 
         return this;
     }

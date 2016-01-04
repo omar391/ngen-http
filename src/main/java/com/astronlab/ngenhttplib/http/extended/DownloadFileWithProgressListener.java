@@ -18,7 +18,7 @@ public class DownloadFileWithProgressListener implements IHttpConnectionManager 
     private int retryCount = 3;
     private int retriedNo = 0;
 
-    public DownloadFileWithProgressListener(HttpInvoker invoker, IHttpProgressListener listener) {
+    public DownloadFileWithProgressListener(HttpInvoker invoker, IHttpProgressListener listener) throws Exception {
         this.httpInvoker = invoker;
         this.updateListener = listener;
         connectionTag = "" + Calendar.getInstance().getTimeInMillis();
