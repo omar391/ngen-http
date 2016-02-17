@@ -1,7 +1,7 @@
 package com.astronlab.ngenhttplib.http.extended;
 
 import com.astronlab.ngenhttplib.http.HttpInvoker;
-import com.astronlab.ngenhttplib.http.MultipartEntityBuilder;
+import com.astronlab.ngenhttplib.http.PostEntityBuilder;
 import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
 import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 
@@ -32,7 +32,7 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
     public void startUploadSpeedTest() {
         try {
             updateListener.notifyListener(IHttpProgressListener.Status.RUNNING, IHttpProgressListener.UpdateType.STATUS, IHttpProgressListener.CONNECTING_MSG);
-            MultipartEntityBuilder mEntity = new MultipartEntityBuilder();
+            PostEntityBuilder mEntity = new PostEntityBuilder();
             progressHandler = mEntity.addStreamingData("uploadfile", getUploadFile()).setListener(updateListener);
             httpInvoker.post(mEntity);
             httpInvoker.getHttpResponse();

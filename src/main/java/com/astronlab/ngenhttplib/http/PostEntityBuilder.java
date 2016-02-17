@@ -1,9 +1,9 @@
 package com.astronlab.ngenhttplib.http;
 
 import com.astronlab.ngenhttplib.http.extended.BufferedSinkProgressHandler;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import okio.BufferedSink;
 
 import java.io.File;
@@ -13,9 +13,9 @@ import java.nio.file.Files;
 /**
  * Created by omar-mac on 1/2/16.
  */
-public class MultipartEntityBuilder {
+public class PostEntityBuilder {
 
-    private MultipartBuilder multipartBuilder = new MultipartBuilder();
+    private MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
 
     /**
      * This method is normally not required except the cases where we need to specifically set multipart "Sub-type"
@@ -24,8 +24,8 @@ public class MultipartEntityBuilder {
      * @param mimeType
      * @return MultipartEntityBuilder
      */
-    public MultipartEntityBuilder setMultipartType(MultipartType mimeType) {
-        multipartBuilder.type(MediaType.parse(mimeType.value));
+    public PostEntityBuilder setMultipartType(MultipartType mimeType) {
+        multipartBuilder.setType(mimeType.value);
 
         return this;
     }
@@ -37,23 +37,24 @@ public class MultipartEntityBuilder {
      * @param mimeType
      * @return
      */
-    public MultipartEntityBuilder addRawData(String content, String mimeType) {
+    public PostEntityBuilder addRawData(String content, String mimeType) {
         multipartBuilder.addPart(RequestBody.create(MediaType.parse(mimeType), content));
 
         return this;
     }
 
-    public MultipartEntityBuilder addFormData(String name, String value) {
+    public PostEntityBuilder addFormData(String name, String value) {
         multipartBuilder.addFormDataPart(name, value);
 
         return this;
     }
 
-    public MultipartEntityBuilder addFormData(String name, File file) {
+    public PostEntityBuilder addFormData(String name, File file) {
         return addFormData(name, file, null, null);
     }
 
-    public MultipartEntityBuilder addFormData(String name, File file, String fileName, String fileMimeType) {
+    public PostEntityBuilder addFormData(String name, File file, String fileName, String fileMimeType) {
+        setMultipartType(MultipartType.FORM);
         RequestBody requestBody = RequestBody.create(MediaType.parse(fileMimeType), file);
         multipartBuilder.addFormDataPart(name, fileName, requestBody);
 
@@ -61,6 +62,7 @@ public class MultipartEntityBuilder {
     }
 
     public BufferedSinkProgressHandler addStreamingData(String uploadName, File file) throws IOException {
+        setMultipartType(MultipartType.FORM);
         return addStreamingData(uploadName, Files.readAllBytes(file.toPath()));
     }
 
@@ -70,7 +72,7 @@ public class MultipartEntityBuilder {
      * @param bufferedContent
      * @return
      */
-    public BufferedSinkProgressHandler addStreamingData(String name, byte[] bufferedContent) {
+    public BufferedSinkProgressHandler addStreamingData(String name, final byte[] bufferedContent) {
         final BufferedSinkProgressHandler[] progressHandler = new BufferedSinkProgressHandler[0];
         RequestBody requestBody = new RequestBody() {
 
@@ -91,15 +93,16 @@ public class MultipartEntityBuilder {
     }
 
     public RequestBody build() {
+
         return multipartBuilder.build();
     }
 
     public enum MultipartType {
-        MIXED("multipart/mixed"), ALTERNATIVE("multipart/alternative"), DIGEST("multipart/digest"), PARALLEL("multipart/parallel"), FORM("multipart/form-data");
+        MIXED(MultipartBody.MIXED), ALTERNATIVE(MultipartBody.ALTERNATIVE), DIGEST(MultipartBody.DIGEST), PARALLEL(MultipartBody.PARALLEL), FORM(MultipartBody.FORM);
 
-        private String value;
+        private MediaType value;
 
-        private MultipartType(String typeStr) {
+        private MultipartType(MediaType typeStr) {
             this.value = typeStr;
         }
     }

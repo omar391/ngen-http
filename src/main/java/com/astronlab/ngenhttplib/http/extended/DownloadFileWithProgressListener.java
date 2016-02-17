@@ -3,7 +3,7 @@ package com.astronlab.ngenhttplib.http.extended;
 import com.astronlab.ngenhttplib.http.HttpInvoker;
 import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
 import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 
 import java.io.InputStream;
 import java.util.Calendar;

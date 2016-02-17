@@ -64,12 +64,12 @@ public class IpProperties implements IHttpProgressListener {
         } else if (stateType == Status.RUNNING) {
             if (updateType == UpdateType.DOWNLOAD) {
                 try {
-                    downloadSpeedManager.manageSpeed((double) value);
+                    downloadSpeedManager.manageSpeed((Double) value);
                 } catch (IOException e) {
                 }
             } else if (updateType == UpdateType.UPLOAD) {
                 try {
-                    uploadSpeedManager.manageSpeed((double) value);
+                    uploadSpeedManager.manageSpeed((Double) value);
                 } catch (IOException e) {
                 }
             } else if (updateType == UpdateType.HEADER) {
