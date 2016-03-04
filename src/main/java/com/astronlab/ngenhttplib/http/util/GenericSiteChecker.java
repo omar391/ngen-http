@@ -46,7 +46,7 @@ public class GenericSiteChecker {
             } else {
                 url = sslStr + url;
             }
-            invoker.setUrl(url);
+            invoker.config().setUrl(url).update();
         }
     }
 
@@ -72,8 +72,7 @@ public class GenericSiteChecker {
     }
 
     private void prepareInvoker() {
-        invoker.setUrl(url);
-        invoker.enableRedirection();
+        invoker.config().setUrl(url).update();
     }
 
     protected boolean isSupported() throws Exception {

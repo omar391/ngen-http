@@ -6,11 +6,9 @@ import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
 import okhttp3.Response;
 
 import java.io.InputStream;
-import java.util.Calendar;
 
 public class DownloadFileWithProgressListener implements IHttpConnectionManager {
 
-    private final String connectionTag;
     private HttpInvoker httpInvoker;
     private IHttpProgressListener updateListener;
     private boolean closeDownload = false;
@@ -21,8 +19,6 @@ public class DownloadFileWithProgressListener implements IHttpConnectionManager 
     public DownloadFileWithProgressListener(HttpInvoker invoker, IHttpProgressListener listener) throws Exception {
         this.httpInvoker = invoker;
         this.updateListener = listener;
-        connectionTag = "" + Calendar.getInstance().getTimeInMillis();
-        httpInvoker.setTag(connectionTag);
     }
 
     public void startDownload() {
@@ -49,7 +45,7 @@ public class DownloadFileWithProgressListener implements IHttpConnectionManager 
                     segmentStartTime = System.currentTimeMillis();
                 }
             }
-            httpInvoker.abortConnection(connectionTag);
+            httpInvoker.abortConnection();
             updateListener.notifyListener(IHttpProgressListener.Status.SUCCESS, IHttpProgressListener.UpdateType.STATUS, IHttpProgressListener.SUCCESSFUL_MSG);
 
         } catch (Exception ex) {

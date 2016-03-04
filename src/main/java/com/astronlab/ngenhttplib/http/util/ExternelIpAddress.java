@@ -20,14 +20,14 @@ public class ExternelIpAddress {
         String ip = null;
         HttpInvoker invoker = new HttpInvoker();
         for (; i < urlListLen; i++) {
-            invoker.setUrl(ValuesStore.Http.extIpApiList[i]);
+            invoker.config().setUrl(ValuesStore.Http.extIpApiList[i]).update();
             ip = matchIp(invoker.getStringData());
             if (ip != null) {
                 break;
             }
         }
         if (ip == null) {
-            invoker.setUrl(ValuesStore.Http.extIpUrl);
+            invoker.config().setUrl(ValuesStore.Http.extIpUrl).update();
             ip = matchIp(invoker.getStringData());
             if (ip == null) {
                 throw new Exception("External IP parsing returns null");

@@ -26,7 +26,7 @@ public class IpProperties implements IHttpProgressListener {
         this.ip = proxyIp;
         this.port = proxyPort;
         httpInvoker = new HttpInvoker();
-        httpInvoker.setProxy(proxyIp, proxyPort, Proxy.Type.HTTP);
+        httpInvoker.config().setProxy(proxyIp, proxyPort, Proxy.Type.HTTP).update();
     }
 
     //Constructor for client's own ip
@@ -35,7 +35,7 @@ public class IpProperties implements IHttpProgressListener {
     }
 
     public double calculateDownloadSpeed(String dlUrl) throws Exception {
-        httpInvoker.setUrl(dlUrl);
+        httpInvoker.config().setUrl(dlUrl).update();
         DownloadFileWithProgressListener downloadTester = new DownloadFileWithProgressListener(httpInvoker, this);
         downloadSpeedManager = new SpeedManager(downloadTester);
         downloadTester.startDownload();
@@ -47,7 +47,7 @@ public class IpProperties implements IHttpProgressListener {
     }
 
     public double calculateUploadSpeed(String uploadUrl) {
-        httpInvoker.setUrl(uploadUrl);
+        httpInvoker.config().setUrl(uploadUrl).update();
         UploadFileWithProgressListener uploadTester = new UploadFileWithProgressListener(httpInvoker, this);
         uploadSpeedManager = new SpeedManager(uploadTester);
         if (uploadFileSize > 0) {

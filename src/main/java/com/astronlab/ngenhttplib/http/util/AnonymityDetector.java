@@ -21,11 +21,9 @@ public class AnonymityDetector {
 
     public AnonymityDetector(String ip, int port) throws Exception {
         HttpInvoker invoker = new HttpInvoker(ValuesStore.Http.judgeUrl + "?ip=" + new ExternelIpAddress().getAddress());
-        invoker.setConnectionTimeOut(30000);
-        invoker.setSocketTimeOut(30000);
+        invoker.config().setConnectionTimeOut(30000).setSocketTimeOut(30000).update();
         proxyType = port == 1080 ? Proxy.Type.SOCKS : Proxy.Type.HTTP;
-        invoker.setProxy(ip, port, proxyType);
-        invoker.addPresetRequestHeadersSet();
+        invoker.config().setProxy(ip, port, proxyType).addPresetRequestHeadersSet().update();
         try {
             result = invoker.getStringData();
         } catch (Exception e) {
@@ -34,7 +32,7 @@ public class AnonymityDetector {
             } else {
                 proxyType = Proxy.Type.SOCKS;
             }
-            invoker.setProxy(ip, port, proxyType);
+            invoker.config().setProxy(ip, port, proxyType).update();
             result = invoker.getStringData();
         }
         System.out.println(result);
