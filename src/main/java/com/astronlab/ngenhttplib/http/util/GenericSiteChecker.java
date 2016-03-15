@@ -72,7 +72,7 @@ public class GenericSiteChecker {
     }
 
     private void prepareInvoker() {
-        invoker.config().setUrl(url).update();
+        invoker.config().setUrl(url);
     }
 
     protected boolean isSupported() throws Exception {

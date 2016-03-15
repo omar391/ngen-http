@@ -26,7 +26,7 @@ public class IpProperties implements IHttpProgressListener {
         this.ip = proxyIp;
         this.port = proxyPort;
         httpInvoker = new HttpInvoker();
-        httpInvoker.config().setProxy(proxyIp, proxyPort, Proxy.Type.HTTP).update();
+        httpInvoker.config().setProxy(proxyIp, proxyPort, Proxy.Type.HTTP);
     }
 
     //Constructor for client's own ip
@@ -47,7 +47,7 @@ public class IpProperties implements IHttpProgressListener {
     }
 
     public double calculateUploadSpeed(String uploadUrl) {
-        httpInvoker.config().setUrl(uploadUrl).update();
+        httpInvoker.config().setUrl(uploadUrl);
         UploadFileWithProgressListener uploadTester = new UploadFileWithProgressListener(httpInvoker, this);
         uploadSpeedManager = new SpeedManager(uploadTester);
         if (uploadFileSize > 0) {

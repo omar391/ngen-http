@@ -257,19 +257,12 @@ public class HttpInvoker {
 			return this;
 		}
 
-		public InvokerConfig acceptAllSSLCerts() {
-			CustomSslSocket socket;
-			try {
-				socket = new CustomSslSocket();
-
-				getClientConfig().sslSocketFactory(
-						socket.getSocketFactory()).hostnameVerifier(
-						socket.getHostNameVerifier());
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (KeyManagementException e) {
-				e.printStackTrace();
-			}
+		public InvokerConfig acceptAllSSLCerts()
+				throws KeyManagementException, NoSuchAlgorithmException {
+			TrustAllCertsSSLSocket socket = new TrustAllCertsSSLSocket();
+			getClientConfig().sslSocketFactory(
+					socket.getSocketFactory()).hostnameVerifier(
+					socket.getHostNameVerifier());
 
 			return this;
 		}
@@ -358,10 +351,14 @@ public class HttpInvoker {
 			return getRequestConfig();
 		}
 
-		public HttpInvoker update() {
+		public HttpInvoker update() throws Exception {
 			//Update client first
 			if (clientConfigBuilder != null) {
 				httpClient = clientConfigBuilder.build();
+				if (requestConfigBuilder == null) {
+					currentRequestCall = createRequestCall(
+							getCurrentRequestCall().request());
+				}
 				clientConfigBuilder = null;
 			}
 
@@ -378,18 +375,18 @@ public class HttpInvoker {
 		}
 	}
 
-	public class CustomSslSocket {
+	private class TrustAllCertsSSLSocket {
 
 		private final SSLContext sslContext;
 
-		public CustomSslSocket()
+		public TrustAllCertsSSLSocket()
 				throws NoSuchAlgorithmException, KeyManagementException {
 			sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(null, new TrustManager[] { new TrustAllCertsManager() },
 					new SecureRandom());
 		}
 
-		private SSLSocketFactory getSocketFactory() {
+		public SSLSocketFactory getSocketFactory() {
 			return sslContext.getSocketFactory();
 		}
 
@@ -402,7 +399,7 @@ public class HttpInvoker {
 			};
 		}
 
-		public class TrustAllCertsManager implements X509TrustManager {
+		class TrustAllCertsManager implements X509TrustManager {
 
 			@Override public void checkClientTrusted(
 					X509Certificate[] x509Certificates, String s)
