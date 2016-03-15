@@ -10,7 +10,9 @@ import okio.BufferedSink;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,17 +21,23 @@ import java.util.Map;
 public class RequestEntityBuilder {
     private MultipartBody.Builder multiPartFormBuilder = new MultipartBody.Builder();
     private SinglePartForm singlePartFormBuilder = new SinglePartForm();
-    private HashMap<String, String> valuesMap = new HashMap<>(); //used for both single/multi part forms
-    private RequestBodyType contentType = RequestBodyType.FORM_URLENCODED; //default value;
+    private RequestBodyType contentType = RequestBodyType.FORM_URLENCODED; //default body mime-type;
+
+    //used for both single/multi part forms
+    private List<String> names = new ArrayList<>();
+    private List<String> values = new ArrayList<>();
 
     public enum RequestBodyType {
         /**
          * "CUSTOM" should not be used when calling {@code setBodyMimeType(PostBodyType mimeType)} except with {@code setBodyMimeType(String mimeType, boolean isMultiPart)}
          */
-        MIXED(MultipartBody.MIXED, true), ALTERNATIVE(MultipartBody.ALTERNATIVE, true),
+        MIXED(MultipartBody.MIXED, true), ALTERNATIVE(MultipartBody.ALTERNATIVE,
+                true),
         DIGEST(MultipartBody.DIGEST, true), PARALLEL(MultipartBody.PARALLEL, true),
-        FORM(MultipartBody.FORM, true), FORM_URLENCODED(MediaType.parse("application/x-www-form-urlencoded"), false),
-        TEXT_PLAIN(MediaType.parse("text/plain"), false), JSON(MediaType.parse("application/json"), false),
+        FORM(MultipartBody.FORM, true), FORM_URLENCODED(
+                MediaType.parse("application/x-www-form-urlencoded"), false),
+        TEXT_PLAIN(MediaType.parse("text/plain"), false), JSON(
+                MediaType.parse("application/json"), false),
         XML(MediaType.parse("application/xml"), false), CUSTOM(null, false);
 
         private MediaType value;
@@ -61,7 +69,8 @@ public class RequestEntityBuilder {
      * @param isMultiPart
      * @return
      */
-    public RequestEntityBuilder setBodyMimeType(String mimeType, boolean isMultiPart) {
+    public RequestEntityBuilder setBodyMimeType(String mimeType,
+                                                boolean isMultiPart) {
         contentType = RequestBodyType.CUSTOM;
         contentType.isMultiPart = isMultiPart;
         contentType.value = MediaType.parse(mimeType);
@@ -69,37 +78,58 @@ public class RequestEntityBuilder {
         return this;
     }
 
+    /**
+     * Use-case: For building with only single bodied raw string data, i.e: JSON raw data
+     *
+     * @param rawContent
+     * @return
+     */
     public RequestEntityBuilder buildFromRawData(String rawContent) {
         return singlePartFormBuilder.buildFromRawData(rawContent);
     }
 
-    public RequestEntityBuilder buildFromBinaryData(File rawContent) throws IOException {
+    /**
+     * Use-case: For building with only single bodied raw/binary file data, i.e: file binary/raw data
+     *
+     * @param rawContent
+     * @return
+     * @throws IOException
+     */
+    public RequestEntityBuilder buildFromBinaryData(File rawContent)
+            throws IOException {
         return singlePartFormBuilder.buildFromBinaryData(rawContent);
     }
 
     public RequestEntityBuilder addParams(HashMap<String, String> paramsMap) {
-        this.valuesMap = paramsMap;
+        for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
+            names.add(entry.getKey());
+            values.add(entry.getValue());
+        }
 
         return this;
     }
 
     public RequestEntityBuilder addParam(String name, String value) {
-        valuesMap.put(name, value);
+        names.add(name);
+        values.add(value);
 
         return this;
     }
 
-    public RequestEntityBuilder addParam(String name, File file) throws IOException {
+    public RequestEntityBuilder addParam(String name, File file)
+            throws IOException {
         return addParam(name, file, null, getFileMimeType(file));
     }
 
-    public RequestEntityBuilder addParam(String name, File file, String fileName, String fileMimeType) {
+    public RequestEntityBuilder addParam(String name, File file, String fileName,
+                                         String fileMimeType) {
         //Automatically set form data to multipart_form if it's not already set to a multipart option
         if (!contentType.isMultiPart) {
             setBodyMimeType(RequestBodyType.FORM);
         }
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse(fileMimeType), file);
+        RequestBody requestBody = RequestBody.create(MediaType.parse(fileMimeType),
+                file);
         multiPartFormBuilder.addFormDataPart(name, fileName, requestBody);
 
         return this;
@@ -109,8 +139,10 @@ public class RequestEntityBuilder {
         return Files.probeContentType(file.toPath());
     }
 
-    public BufferedSinkProgressHandler addStreamingData(String uploadName, File file) throws IOException {
-        return addStreamingData(uploadName, Files.readAllBytes(file.toPath()), getFileMimeType(file));
+    public BufferedSinkProgressHandler addStreamingData(String uploadName,
+                                                        File file) throws IOException {
+        return addStreamingData(uploadName, Files.readAllBytes(file.toPath()),
+                getFileMimeType(file));
     }
 
     /**
@@ -121,7 +153,8 @@ public class RequestEntityBuilder {
      * @param mimeType
      * @return
      */
-    public BufferedSinkProgressHandler addStreamingData(String name, final byte[] bufferedContent, final String mimeType) {
+    public BufferedSinkProgressHandler addStreamingData(String name,
+                                                        final byte[] bufferedContent, final String mimeType) {
         final BufferedSinkProgressHandler[] progressHandler = new BufferedSinkProgressHandler[0];
         singlePartFormBuilder.requestBody = new RequestBody() {
 
@@ -148,9 +181,11 @@ public class RequestEntityBuilder {
 
         } else {
             String key, value;
-            for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
-                key = entry.getKey();
-                value = entry.getValue();
+            int size = names.size();
+
+            for (int i = 0; i < size; i++) {
+                key = names.get(i);
+                value = values.get(i);
                 if (contentType.isMultiPart) {
                     multiPartFormBuilder.addFormDataPart(key, value);
                 } else {
@@ -168,7 +203,8 @@ public class RequestEntityBuilder {
         //Remove all references for faster GC
         multiPartFormBuilder = null;
         singlePartFormBuilder = null;
-        valuesMap = null;
+        names = null;
+        values = null;
         contentType = null;
 
         return requestBody;
@@ -184,7 +220,8 @@ public class RequestEntityBuilder {
             return RequestEntityBuilder.this;
         }
 
-        RequestEntityBuilder buildFromBinaryData(File rawContent) throws IOException {
+        RequestEntityBuilder buildFromBinaryData(File rawContent)
+                throws IOException {
             MediaType mimeType = MediaType.parse(getFileMimeType(rawContent));
             requestBody = RequestBody.create(mimeType, rawContent);
 
