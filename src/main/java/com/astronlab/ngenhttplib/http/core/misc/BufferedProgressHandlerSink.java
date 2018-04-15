@@ -1,44 +1,47 @@
-package com.astronlab.ngenhttplib.http.extended;
+package com.astronlab.ngenhttplib.http.core.misc;
 
-import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
+import com.astronlab.ngenhttplib.http.core.impl.IHttpProgressListener;
 import okio.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 
-public class BufferedSinkProgressHandler implements BufferedSink {
+public class BufferedProgressHandlerSink implements BufferedSink {
 
-    private final BufferedSink delegateSink;
+    private BufferedSink delegateSink;
     private long amountComplete = 0, totalTime = 0;
     private long segmentStartTime = System.currentTimeMillis();
     private boolean closeUpload = false;
     private long speedUpdateDelay = 1000;
-    private IHttpProgressListener httpProgressListener;
+    private final IHttpProgressListener httpProgressListener;
 
-    public BufferedSinkProgressHandler(BufferedSink sink) {
-        this.delegateSink = sink;
+    public BufferedProgressHandlerSink(IHttpProgressListener progressListener) {
+        this.httpProgressListener = progressListener;
     }
 
-    public BufferedSinkProgressHandler setClosed(boolean isClosed) {
+    public BufferedProgressHandlerSink setClosed(boolean isClosed) {
         closeUpload = isClosed;
 
         return this;
     }
 
-    public BufferedSinkProgressHandler speedUpdateDelay(long delay) {
-        speedUpdateDelay = delay;
+    public BufferedProgressHandlerSink setSpeedUpdateDelay(long delay, TimeUnit timeUnit) {
+        if (timeUnit != null && delay > 0) {
+            speedUpdateDelay = timeUnit.toMillis(delay);
+        }
 
         return this;
     }
 
-    public BufferedSinkProgressHandler setListener(IHttpProgressListener listener) {
-        httpProgressListener = listener;
+    public BufferedProgressHandlerSink setRootSink(BufferedSink bufferedSink) {
+        delegateSink = bufferedSink;
 
         return this;
     }
 
-    private BufferedSinkProgressHandler incrementByetCount(long len) {
+    private BufferedProgressHandlerSink incrementByetCount(long len) {
         amountComplete += len;
 
         return this;
@@ -335,6 +338,7 @@ public class BufferedSinkProgressHandler implements BufferedSink {
 
     @Override
     public void close() throws IOException {
+        setClosed(true);
         delegateSink.close();
     }
 

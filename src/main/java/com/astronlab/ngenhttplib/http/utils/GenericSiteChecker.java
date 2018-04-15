@@ -1,16 +1,15 @@
-package com.astronlab.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.utils;
 
-import com.astronlab.ngenhttplib.http.HttpInvoker;
+import com.astronlab.ngenhttplib.http.core.HttpInvoker;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GenericSiteChecker {
 
-    private final String failureRemark = "Failed";
-    protected HttpInvoker invoker;
-    protected String resultHtml = "";
-    protected String successRemark = "Working";
+    private HttpInvoker invoker;
+    private String resultHtml = "";
+    private String successRemark = "Working";
     private boolean isHttps = false;
     private String url;
 
@@ -37,7 +36,7 @@ public class GenericSiteChecker {
         return this;
     }
 
-    private void fixSsl() throws Exception {
+    private void fixSsl() {
         String sslStr = "https://";
 
         if (isHttps) {
@@ -46,7 +45,6 @@ public class GenericSiteChecker {
             } else {
                 url = sslStr + url;
             }
-            invoker.config().setUrl(url).update();
         }
     }
 
@@ -68,18 +66,13 @@ public class GenericSiteChecker {
             Logger.getLogger(GenericSiteChecker.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println(resultHtml);
+        String failureRemark = "Failed";
         return failureRemark;
     }
 
-    private void prepareInvoker() {
-        invoker.config().setUrl(url);
-    }
-
     protected boolean isSupported() throws Exception {
-        prepareInvoker();
         fixSsl();
-        resultHtml = invoker.getStringData();
-        invoker.closeNReleaseResource();
+        resultHtml = invoker.init(url).execute().getStringData();
         return true;
     }
 }

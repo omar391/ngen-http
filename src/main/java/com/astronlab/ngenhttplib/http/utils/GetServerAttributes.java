@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.astronlab.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.utils;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -16,7 +16,6 @@ public class GetServerAttributes implements Callable<HashMap> {
     public static String KEY_HOSTNAME = "host";
     private String ip;
     private int port;
-    private int timeOut = 3000;
     private HashMap result;
 
     public GetServerAttributes(String ip, String port) {
@@ -26,6 +25,7 @@ public class GetServerAttributes implements Callable<HashMap> {
     }
 
     public HashMap getResult() {
+        int timeOut = 3000;
         long latency = new PingTester(ip, port, timeOut).getLatency();
         String hostName = new ReverseHostLookUp(ip).getHostName();
         result.put(KEY_LATENCY, latency);
@@ -34,7 +34,7 @@ public class GetServerAttributes implements Callable<HashMap> {
     }
 
     @Override
-    public HashMap call() throws Exception {
+    public HashMap call() {
         return getResult();
     }
 }

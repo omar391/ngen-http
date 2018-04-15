@@ -1,6 +1,6 @@
-package com.astronlab.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.utils;
 
-import com.astronlab.ngenhttplib.http.HttpInvoker;
+import com.astronlab.ngenhttplib.http.core.HttpInvoker;
 import com.astronlab.ngenhttplib.store.ValuesStore;
 
 import java.util.regex.Matcher;
@@ -20,20 +20,17 @@ public class ExternelIpAddress {
         String ip = null;
         HttpInvoker invoker = new HttpInvoker();
         for (; i < urlListLen; i++) {
-            invoker.config().setUrl(ValuesStore.Http.extIpApiList[i]).update();
-            ip = matchIp(invoker.getStringData());
+            ip = matchIp(invoker.init(ValuesStore.Http.extIpApiList[i]).execute().getStringData());
             if (ip != null) {
                 break;
             }
         }
         if (ip == null) {
-            invoker.config().setUrl(ValuesStore.Http.extIpUrl).update();
-            ip = matchIp(invoker.getStringData());
+            ip = matchIp(invoker.init(ValuesStore.Http.extIpUrl).execute().getStringData());
             if (ip == null) {
                 throw new Exception("External IP parsing returns null");
             }
         }
-        invoker.closeNReleaseResource();
         return ip;
     }
 

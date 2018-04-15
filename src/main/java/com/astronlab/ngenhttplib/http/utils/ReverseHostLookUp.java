@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.astronlab.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.utils;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.Attribute;

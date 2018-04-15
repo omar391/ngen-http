@@ -1,27 +1,29 @@
 package com.astronlab.ngenhttplib.http.extended;
 
-import com.astronlab.ngenhttplib.http.HttpInvoker;
-import com.astronlab.ngenhttplib.http.RequestEntityBuilder;
-import com.astronlab.ngenhttplib.http.impl.IHttpConnectionManager;
-import com.astronlab.ngenhttplib.http.impl.IHttpProgressListener;
+import com.astronlab.ngenhttplib.http.core.InvokerRequest;
+import com.astronlab.ngenhttplib.http.core.InvokerResponse;
+import com.astronlab.ngenhttplib.http.core.impl.IHttpConnectionManager;
+import com.astronlab.ngenhttplib.http.core.impl.IHttpProgressListener;
+import com.astronlab.ngenhttplib.http.core.impl.SyncResponseHandler;
+import com.astronlab.ngenhttplib.http.core.misc.BufferedProgressHandlerSink;
+import com.astronlab.ngenhttplib.http.core.request.InvokerRequestBody;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class UploadFileWithProgressListener implements IHttpConnectionManager {
+public class SimpleUploadFileWithProgressListener implements IHttpConnectionManager {
 
-    private HttpInvoker httpInvoker;
+    private InvokerRequest invokerRequest;
     private IHttpProgressListener updateListener;
-    private int retryCount = 3;
     private int retriedNo = 0;
     private int defaultFileUploadSize = 204800;
     private int fileUploadSizeInKB = defaultFileUploadSize;
     private String uploadFileName = "TEST_UPLOAD";
-    private BufferedSinkProgressHandler progressHandler;
+    private BufferedProgressHandlerSink progressHandler;
 
-    public UploadFileWithProgressListener(HttpInvoker invoker, IHttpProgressListener listener) {
-        this.httpInvoker = invoker;
+    public SimpleUploadFileWithProgressListener(InvokerRequest request, IHttpProgressListener listener) {
+        this.invokerRequest = request;
         this.updateListener = listener;
     }
 
@@ -29,19 +31,24 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
         this.fileUploadSizeInKB = size;
     }
 
-    public void startUploadSpeedTest() {
+    public void startUploadSpeedTest() throws Exception {
         try {
             updateListener.notifyListener(IHttpProgressListener.Status.RUNNING, IHttpProgressListener.UpdateType.STATUS, IHttpProgressListener.CONNECTING_MSG);
-            RequestEntityBuilder mEntity = new RequestEntityBuilder();
-            progressHandler = mEntity.addStreamingData("uploadfile", getUploadFile()).setListener(updateListener);
-            httpInvoker.config().post(mEntity).update().getHttpResponse();
+            if (retriedNo < 1) {
+                InvokerRequestBody requestBody = InvokerRequestBody.createViaMultiPartBody().addParam("uploadfile", getUploadFile());
+                progressHandler = requestBody.setProgressListener(updateListener);
+                invokerRequest.post(requestBody);
+            }
+
+            invokerRequest.execute((SyncResponseHandler) InvokerResponse::close);
         } catch (Exception ex) {
             updateListener.notifyListener(IHttpProgressListener.Status.RUNNING, IHttpProgressListener.UpdateType.STATUS, IHttpProgressListener.RETRY_MSG);
             retryUpload();
         }
     }
 
-    private void retryUpload() {
+    private void retryUpload() throws Exception {
+        int retryCount = 3;
         if (retriedNo < retryCount) {
             retriedNo++;
             this.startUploadSpeedTest();
@@ -53,10 +60,7 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
     @Override
     public void stopConnection() {
         progressHandler.setClosed(true);
-        try {
-            httpInvoker.closeNReleaseResource();
-        } catch (IOException e) {
-        }
+        invokerRequest.abortConnection();
     }
 
     private void createNewDummyFile() {
@@ -68,7 +72,7 @@ public class UploadFileWithProgressListener implements IHttpConnectionManager {
             dummyFile.writeUTF(uploadFileName);
             dummyFile.close();
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 

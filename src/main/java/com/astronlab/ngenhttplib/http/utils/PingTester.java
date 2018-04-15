@@ -1,4 +1,4 @@
-package com.astronlab.ngenhttplib.http.util;
+package com.astronlab.ngenhttplib.http.utils;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -8,7 +8,6 @@ import java.net.Socket;
  */
 public class PingTester {
 
-    private long Latency;
     private String Ip;
     private int Port;
     private int timeOut;
@@ -20,8 +19,8 @@ public class PingTester {
     }
 
     public long getLatency() {
-        this.Latency = testLatency();
-        return this.Latency;
+        long latency = testLatency();
+        return latency;
     }
 
     private long testLatency() {

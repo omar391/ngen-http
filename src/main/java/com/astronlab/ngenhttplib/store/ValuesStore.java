@@ -8,7 +8,7 @@ public class ValuesStore {
     public static class Http {
 
         public static final String[] extIpApiList = {
-                "http://api.exip.org/?call=ip",
+                "http://api.exip.org/?callObj=ip",
                 "http://checkip.dyndns.org/"
         };
         public static final String extIpUrl = "http://app.live-start.com/test-app/speedproxy/ip.php";
