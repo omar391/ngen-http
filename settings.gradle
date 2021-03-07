@@ -1,2 +1,5 @@
 //all lower case name is better looking for Jar creation
 rootProject.name = 'ngenhttplib'
+
+include ':SharedCore'
+project(':SharedCore').projectDir = new File(settingsDir, '../NgenCommons/SharedCore')
